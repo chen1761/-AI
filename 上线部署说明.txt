@@ -1,4 +1,4 @@
-曜海 GlobalTrade AI 官网上线部署说明
+﻿曜海 GlobalTrade AI 官网上线部署说明
 
 一、要实现“客户搜索得到”，必须满足：
 1. 本文件夹内容上传到公网网站根目录，例如 https://haoleyun.xyz/。
@@ -21,7 +21,7 @@
   logo.svg
   robots.txt
   sitemap.xml
-  downloads/YaoHai_GlobalTrade_AI_Commercial_V1.0.9.zip
+  downloads/YaoHai_GlobalTrade_AI_Commercial_V1.0.10.zip
   vercel.json
 
 三、官网按钮逻辑：
@@ -37,3 +37,4 @@
 2. 执行 D:\npx.cmd vercel@latest login，完成命令行登录。
 3. 执行 D:\npx.cmd vercel@latest --prod --yes。
 4. 在 Vercel 项目设置中绑定 haoleyun.xyz，并按 Vercel 提示配置 DNS。
+

@@ -1,4 +1,4 @@
-# 曜海 GlobalTrade AI 官网
+﻿# 曜海 GlobalTrade AI 官网
 
 这是曜海 GlobalTrade AI 的公网官网静态站点。
 
@@ -33,4 +33,5 @@ $env:GITHUB_TOKEN="你的 GitHub Token"
 - `index.html`：官网首页
 - `robots.txt`：搜索引擎抓取规则
 - `sitemap.xml`：站点地图
-- `downloads/YaoHai_GlobalTrade_AI_Commercial_V1.0.9.zip`：下载应用
+- `downloads/YaoHai_GlobalTrade_AI_Commercial_V1.0.10.zip`：下载应用
+
