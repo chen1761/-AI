@@ -21,7 +21,7 @@
   logo.svg
   robots.txt
   sitemap.xml
-  downloads/YaoHai_GlobalTrade_AI_Commercial_FIXED_20260713.zip
+  downloads/YaoHai_GlobalTrade_AI_Commercial_V1.0.9.zip
   vercel.json
 
 三、官网按钮逻辑：
