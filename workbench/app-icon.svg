@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="外贸AI业务员Agent">
+  <defs>
+    <linearGradient id="g" x1="34" y1="28" x2="218" y2="226" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0A4F52"/>
+      <stop offset="1" stop-color="#178C86"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="74" y1="70" x2="196" y2="196" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F0D58A"/>
+      <stop offset="1" stop-color="#B88A2A"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#062E32" flood-opacity=".25"/>
+    </filter>
+  </defs>
+  <rect x="18" y="18" width="220" height="220" rx="52" fill="url(#g)"/>
+  <path d="M62 72h86c27 0 49 22 49 49v63H95c-18 0-33-15-33-33V72Z" fill="#F8FBFC" filter="url(#shadow)"/>
+  <path d="M82 96h64M82 119h78M82 142h50" stroke="#0A5E61" stroke-width="12" stroke-linecap="round"/>
+  <path d="M173 56l10 24 26 5-20 18 4 26-22-13-23 13 6-26-20-18 26-5 13-24Z" fill="url(#gold)"/>
+  <path d="M164 161c14-4 30-13 43-28" stroke="#D5B15B" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="207" cy="133" r="8" fill="#F0D58A"/>
+</svg>

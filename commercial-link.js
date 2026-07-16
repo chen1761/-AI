@@ -1,14 +1,12 @@
-(function () {
+﻿(function () {
   const modal = document.getElementById("commercialModal");
   const closeBtn = document.getElementById("commercialClose");
   const continueLink = document.getElementById("continueCommercial");
-  const links = document.querySelectorAll(".commercial-link");
-  const localHosts = new Set(["localhost", "127.0.0.1", ""]);
   const params = new URLSearchParams(location.search);
   if (params.get("launchSaas") === "1") {
     document.body.classList.add("launcher-mode");
     setTimeout(() => {
-      location.href = `${location.origin}/?from=launcher`;
+      location.href = "./workbench/?from=launcher";
     }, 2000);
   }
 
@@ -26,10 +24,8 @@
     modal.setAttribute("aria-hidden", "true");
   }
 
-  links.forEach((link) => {
+  document.querySelectorAll("[data-local-saas]").forEach((link) => {
     link.addEventListener("click", (event) => {
-      const isLocalPage = location.protocol === "file:" || localHosts.has(location.hostname);
-      if (isLocalPage) return;
       event.preventDefault();
       openModal(link.href);
     });
@@ -43,3 +39,4 @@
     if (event.key === "Escape") closeModal();
   });
 })();
+

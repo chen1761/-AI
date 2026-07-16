@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="外贸 AI 业务员 Agent">
+  <rect width="96" height="96" rx="18" fill="#0E5F60"/>
+  <path d="M22 30h52v26c0 11-9 20-20 20H22V30Z" fill="#FFFFFF" opacity=".95"/>
+  <path d="M31 40h31M31 50h24M31 60h16" stroke="#0E5F60" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="68" cy="27" r="10" fill="#E0B451"/>
+  <path d="M66 22h4v10h-4zM63 25h10v4H63z" fill="#0E5F60"/>
+</svg>

@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="曜海 GlobalTrade AI，本地部署外贸业务智能体，支持询盘处理、产品资料库、客户跟进、单证、订单履约、财务结算和数据大屏。">
+  <meta name="theme-color" content="#0A1F38">
+  <title>曜海 GlobalTrade AI | Premium Foreign Trade Agent</title>
+  <link rel="icon" href="app-icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="config.js"></script>
+  <script src="license.js"></script>
+</head>
+<body>
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="展开或收起导航">☰</button>
+  <button class="contrast-toggle" id="contrastToggle" aria-label="切换高对比度模式">高对比</button>
+  <div class="global-toast" id="globalToast" role="status" aria-live="polite"></div>
+  <div class="splash-screen" id="splashScreen">
+    <div class="splash-card">
+      <img src="app-icon.svg" alt="曜海 GlobalTrade AI">
+      <div>
+        <strong>曜海 GlobalTrade AI</strong>
+        <span id="splashStatus">正在校验授权与本地资料</span>
+      </div>
+      <div class="splash-line"><i></i></div>
+      <small class="splash-progress" id="splashProgress">0%</small>
+    </div>
+  </div>
+  <div class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <img src="app-icon.svg" alt="曜海 GlobalTrade AI logo">
+      <h1>曜海 GlobalTrade AI</h1>
+      <p class="login-subtitle">Premium Foreign Trade Agent</p>
+      <div class="login-stage active" id="licenseStage">
+        <p id="loginPlan">请输入授权秘钥激活软件</p>
+        <div class="license-input-wrap">
+          <label class="sr-only" for="licenseInput">授权秘钥</label>
+          <textarea id="licenseInput" placeholder="粘贴授权秘钥" autocomplete="one-time-code"></textarea>
+          <button type="button" id="clearLicense" aria-label="清空授权秘钥">×</button>
+        </div>
+        <button class="primary" id="activateBtn"><span>验证秘钥并进入账号登录</span><i class="btn-loading"></i></button>
+      </div>
+      <div class="login-stage" id="accountStage">
+        <div class="role-login-switch" id="roleLoginSwitch">
+          <button class="active" data-login-role="主账号">主账号</button>
+          <button data-login-role="管理员子账号">管理员</button>
+          <button data-login-role="业务员子账号">子账号</button>
+        </div>
+        <div class="auth-tabs">
+          <button class="active" id="showLoginTab">账号登录</button>
+          <button id="showRegisterTab">注册账号</button>
+          <button id="showRecoverTab">找回密码</button>
+        </div>
+        <div class="account-form active" id="loginForm">
+          <label class="sr-only" for="loginAccount">登录账号</label>
+          <input id="loginAccount" class="text-input" placeholder="账号 / 手机 / 邮箱" autocomplete="username">
+          <div class="password-field"><label class="sr-only" for="loginPassword">登录密码</label><input id="loginPassword" class="text-input" type="password" placeholder="登录密码" autocomplete="current-password"><button type="button" data-toggle-password="loginPassword" aria-label="显示或隐藏密码">◎</button></div>
+          <p class="account-role-hint" id="loginRoleHint">当前登录方向：主账号</p>
+          <button class="primary" id="loginBtn"><span>登录并进入公司工作区</span><i class="btn-loading"></i></button>
+        </div>
+        <div class="account-form" id="registerForm">
+          <label class="sr-only" for="registerName">姓名</label>
+          <input id="registerName" class="text-input" placeholder="姓名，例如：王经理" autocomplete="name">
+          <label class="sr-only" for="registerCompany">公司名称</label>
+          <input id="registerCompany" class="text-input" placeholder="公司名称" autocomplete="organization">
+          <label class="sr-only" for="registerAccount">注册账号</label>
+          <input id="registerAccount" class="text-input" placeholder="登录账号" autocomplete="username">
+          <label class="sr-only" for="registerRole">账号类型</label>
+          <select id="registerRole" class="text-input">
+            <option value="主账号">主账号</option>
+            <option value="管理员子账号">管理员子账号</option>
+            <option value="业务员子账号">普通子账号</option>
+          </select>
+          <input id="registerParentAccount" class="text-input" placeholder="上级账号：管理员/普通子账号需填写">
+          <input id="registerRecoverCode" class="text-input" placeholder="找回密码口令，例如公司简称或手机号后四位">
+          <div class="password-field"><label class="sr-only" for="registerPassword">注册密码</label><input id="registerPassword" class="text-input" type="password" placeholder="设置密码，至少 6 位" autocomplete="new-password"><button type="button" data-toggle-password="registerPassword" aria-label="显示或隐藏密码">◎</button></div>
+          <button class="primary" id="registerBtn"><span>注册账号并进入工作区</span><i class="btn-loading"></i></button>
+        </div>
+        <div class="account-form" id="recoverForm">
+          <label class="sr-only" for="recoverAccount">找回账号</label>
+          <input id="recoverAccount" class="text-input" placeholder="请输入需要找回的账号">
+          <input id="recoverCode" class="text-input" placeholder="请输入注册时设置的找回口令">
+          <div class="password-field"><label class="sr-only" for="recoverPassword">新密码</label><input id="recoverPassword" class="text-input" type="password" placeholder="设置新密码，至少 6 位"><button type="button" data-toggle-password="recoverPassword" aria-label="显示或隐藏密码">◎</button></div>
+          <button class="primary" id="recoverBtn"><span>重置密码</span><i class="btn-loading"></i></button>
+        </div>
+        <div class="account-switch-line">
+          <button id="backToLicense">更换授权秘钥</button>
+        </div>
+      </div>
+      <div class="login-error" id="licenseError"></div>
+      <label class="terms-row"><input type="checkbox" id="termsAgree"> 我已知晓：本地部署版数据默认保存在当前电脑浏览器本地，AI 回复需业务员复核后使用。</label>
+      <small>授权秘钥由服务方生成。激活后开始计算有效期和使用权限。</small>
+    </div>
+  </div>
+  <aside class="sidebar">
+    <div class="brand">
+      <img class="brand-logo" src="app-icon.svg" alt="">
+      <div>
+        <strong>曜海 GlobalTrade AI</strong>
+        <span>Premium Foreign Trade System</span>
+      </div>
+    </div>
+    <nav>
+      <button class="nav-btn" data-view="dashboard">首页工作台</button>
+      <button class="nav-btn active" data-view="inquiry">询盘处理</button>
+      <button class="nav-btn" data-view="trial">上线准备中心</button>
+      <button class="nav-btn" data-view="customers">客户管理</button>
+      <button class="nav-btn" data-view="products">产品资料库</button>
+      <button class="nav-btn" data-view="follow">客户跟进</button>
+      <button class="nav-btn" data-view="translate">翻译助手</button>
+      <button class="nav-btn" data-view="docs">单证中心</button>
+      <button class="nav-btn" data-view="orders">订单履约</button>
+      <button class="nav-btn" data-view="finance">财务结算</button>
+      <button class="nav-btn" data-view="screen">数据大屏</button>
+      <button class="nav-btn" data-view="templates">回复模板</button>
+      <button class="nav-btn" data-view="profile">个人中心</button>
+      <button class="nav-btn" data-view="help">帮助中心</button>
+    </nav>
+    <div class="metric">
+      <span>今日处理</span>
+      <strong id="todayCount">0</strong>
+      <small id="savedTime">等待生成第一封回复</small>
+    </div>
+    <div class="metric secondary">
+      <span>当前资料库</span>
+      <strong id="skuCount">0</strong>
+      <small>SKU 可参与询盘匹配</small>
+    </div>
+    <div class="plan-card">
+      <span id="planName">试点版</span>
+      <strong id="planUsage">0 / 50</strong>
+      <small id="planExpire">有效期：14 天</small>
+      <small id="countdownText">等待激活</small>
+    </div>
+    <div class="account-card">
+      <span>当前账号</span>
+      <strong id="sidebarUserName">未登录</strong>
+      <small id="sidebarCompany">等待账号登录</small>
+      <button id="switchAccountBtn">切换账号</button>
+    </div>
+    <div class="sidebar-foot">
+      <strong>V2.0 LUXE</strong>
+      <span>YAOHAI AI SYSTEM</span>
+    </div>
+  </aside>
+
+  <main class="app">
+    <section class="view" id="view-dashboard">
+      <header class="topbar">
+        <div>
+          <h1>首页工作台</h1>
+          <p>统一查看询盘、客户、成交额、订单履约和资料库健康度，适合老板演示和业务主管日常管理。</p>
+        </div>
+        <div class="actions">
+          <button id="exportBusinessData">导出业务数据</button>
+          <button class="primary" id="addCustomerBtn">新建客户</button>
+        </div>
+      </header>
+
+      <div class="panel onboarding-panel">
+        <div class="panel-head"><h2>首次使用向导</h2><span id="onboardingProgress">0 / 6</span></div>
+        <div class="onboarding-steps" id="onboardingSteps"></div>
+      </div>
+
+      <div class="lux-metrics">
+        <div class="lux-card"><span>本月成交额</span><strong id="dashRevenue">$ 0.00</strong><small class="up" id="dashRevenueNote">按订单实时汇总</small></div>
+        <div class="lux-card"><span>新增询盘</span><strong id="dashInquiry">0</strong><small class="up">来自询盘处理记录</small></div>
+        <div class="lux-card"><span>待跟进客户</span><strong id="dashFollow">0</strong><small class="down">待报价 / 样品中 / 待回款</small></div>
+        <div class="lux-card"><span>资料库 SKU</span><strong data-dynamic-sku>3,920</strong><small class="up">↑ 覆盖 12 个品类</small></div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="panel">
+          <div class="panel-head"><h2>待办事项</h2><span>Priority Tasks</span></div>
+          <div class="todo-list" id="dashboardTodos"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>业绩趋势</h2><span>Revenue Trend</span></div>
+          <div class="trend-chart" id="dashboardTrend"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>客户区域分布</h2><span>Market Mix</span></div>
+          <div class="pie-wrap" id="dashboardRegions"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>热销产品排行</h2><span>Top Products</span></div>
+          <div class="rank-list" id="dashboardProducts"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view active" id="view-inquiry">
+      <header class="topbar">
+        <div>
+          <h1>询盘处理</h1>
+          <p>根据客户询盘自动识别需求、匹配产品、生成英文回复和 3 天跟进邮件。</p>
+        </div>
+        <div class="actions">
+          <select id="scenarioSelect" aria-label="选择示例询盘">
+            <option value="drill">电钻询盘</option>
+            <option value="led">LED 灯具询盘</option>
+            <option value="pet">宠物用品询盘</option>
+            <option value="kettle">小家电询盘</option>
+            <option value="custom">自定义询盘</option>
+          </select>
+          <button id="exportInquiryArchive">导出询盘归档</button>
+          <button class="primary" id="generateBtn"><span>生成回复</span><i class="btn-loading"></i></button>
+        </div>
+      </header>
+
+      <div class="workspace">
+        <div class="panel input-panel">
+          <div class="panel-head">
+            <h2>客户询盘</h2>
+            <span>支持替换为真实询盘</span>
+          </div>
+          <textarea id="inquiry"></textarea>
+          <div class="quick-row">
+            <button id="clearBtn">清空</button>
+            <button id="sampleBtn">换一个示例</button>
+          </div>
+          <div class="bulk-inquiry-box">
+            <div class="panel-head compact-head"><h2>批量询盘队列</h2><span>一行一条询盘</span></div>
+            <textarea id="bulkInquiryInput" class="mini-textarea" placeholder="可粘贴多条询盘，每行一条。用于演示批量导入、标记优先级和逐条处理。"></textarea>
+            <div class="quick-row">
+              <button id="importBulkInquiry">导入询盘队列</button>
+              <button id="processNextInquiry">处理下一条</button>
+            </div>
+            <div class="inquiry-queue" id="inquiryQueue"></div>
+          </div>
+          <div class="hint">
+            演示规则：AI 不自动发送邮件；报价、交期和认证信息会标记为需人工确认。
+          </div>
+          <div class="panel mini-history">
+            <div class="panel-head compact-head"><h2>历史处理记录</h2><span id="inquiryArchiveCount">0 条</span></div>
+            <input id="inquiryArchiveSearch" class="text-input" placeholder="搜索客户、国家、产品、风险或询盘关键词">
+            <div class="archive-list" id="inquiryArchiveList"></div>
+          </div>
+          <div class="upgrade-box" id="upgradeBox">
+            <strong id="upgradeTitle">试用额度已用完</strong>
+            <p id="upgradeText">请联系服务方续期或开通新的授权。</p>
+          </div>
+        </div>
+
+        <div class="panel result-panel">
+          <div class="panel-head">
+            <h2>AI 分析结果</h2>
+            <span id="status">等待处理</span>
+          </div>
+          <div class="analysis-skeleton" id="analysisSkeleton">
+            <i></i><i></i><i></i>
+          </div>
+
+          <div class="score-band">
+            <div>
+              <span>资料匹配度</span>
+              <strong id="matchScore">-</strong>
+            </div>
+            <div>
+              <span>回复可用率预估</span>
+              <strong id="usableScore">-</strong>
+            </div>
+            <div>
+              <span>风险项</span>
+              <strong id="riskCount">-</strong>
+              <small id="riskSummary">等待风险识别</small>
+            </div>
+          </div>
+
+          <div class="result-grid">
+            <div class="result-box">
+              <h3>客户需求</h3>
+              <ul id="analysis"></ul>
+            </div>
+            <div class="result-box">
+              <h3>推荐产品</h3>
+              <div id="productMatch"></div>
+            </div>
+          </div>
+
+          <div class="result-box wide">
+            <h3>人工确认事项</h3>
+            <ul id="riskList"></ul>
+          </div>
+
+          <div class="inquiry-commercial-grid" id="inquiryCommercialGrid">
+            <div class="commercial-card">
+              <span>客户意向等级</span>
+              <strong id="intentLevel">-</strong>
+              <small id="intentReason">等待询盘分析</small>
+            </div>
+            <div class="commercial-card">
+              <span>报价准备度</span>
+              <strong id="quoteReadiness">-</strong>
+              <small id="quoteReadinessText">等待产品匹配</small>
+              <em id="quoteMissingSummary">生成后显示缺失信息</em>
+            </div>
+            <div class="commercial-card">
+              <span>建议跟进动作</span>
+              <strong id="nextActionLevel">-</strong>
+              <small id="nextActionText">生成后给出动作</small>
+            </div>
+          </div>
+
+          <div class="result-box wide decision-box">
+            <div class="decision-head">
+              <h3>业务员成交辅助</h3>
+              <button id="createQuoteDoc">生成报价单草稿</button>
+              <button id="copyInquiryReport">复制处理报告</button>
+            </div>
+            <div class="decision-grid">
+              <div>
+                <h4>缺失资料</h4>
+                <ul id="missingInfoList"></ul>
+              </div>
+              <div>
+                <h4>内部协同提醒</h4>
+                <ul id="internalTodoList"></ul>
+              </div>
+            </div>
+            <div class="next-step-box" id="nextStepBox">等待生成后输出下一步销售动作。</div>
+          </div>
+
+          <div class="mail-box">
+            <div class="mail-toolbar">
+              <h3>英文回复草稿</h3>
+              <button id="resetReply">重置</button>
+              <button id="copyReply">复制</button>
+            </div>
+            <textarea id="reply" class="mail-edit"></textarea>
+          </div>
+
+          <div class="mail-box follow">
+            <div class="mail-toolbar">
+              <h3>3 天跟进邮件</h3>
+              <button id="resetFollow">重置</button>
+              <button id="copyFollow">复制</button>
+            </div>
+            <textarea id="followup" class="mail-edit"></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-trial">
+      <header class="topbar">
+        <div>
+          <h1>上线准备中心</h1>
+          <p>检查产品资料、询盘测试、跟进记录、模板覆盖和备份状态，帮助团队完成正式使用前准备。</p>
+        </div>
+        <div class="actions">
+          <button id="createTrialDemo">生成试点演示数据</button>
+          <button id="exportTrialPackage">导出试点资料包</button>
+          <button class="primary" id="copyTrialReview">复制准备报告</button>
+        </div>
+      </header>
+
+      <div class="trial-grid">
+        <div class="trial-card">
+          <span>建议准备周期</span>
+          <strong>1-3 天</strong>
+          <small>先补齐产品资料、模板和历史询盘测试</small>
+        </div>
+        <div class="trial-card">
+          <span>资料完整度目标</span>
+          <strong>85%+</strong>
+          <small>达到后更适合业务员稳定使用</small>
+        </div>
+        <div class="trial-card">
+          <span>当前资料准备度</span>
+          <strong id="trialReadyScore">-</strong>
+          <small id="trialReadyText">等待计算</small>
+        </div>
+        <div class="trial-card">
+          <span>建议下一步</span>
+          <strong id="trialUpgradePath">补齐资料</strong>
+          <small>根据检查清单完成上线准备</small>
+        </div>
+      </div>
+
+      <div class="trial-grid trial-result-grid">
+        <div class="trial-card">
+          <span>已导入产品</span>
+          <strong id="trialProductCount">0</strong>
+          <small>直接读取产品资料库</small>
+        </div>
+        <div class="trial-card">
+          <span>已处理询盘</span>
+          <strong id="trialInquiryCount">0</strong>
+          <small>直接读取询盘处理记录</small>
+        </div>
+        <div class="trial-card">
+          <span>跟进线索</span>
+          <strong id="trialLeadCount">0</strong>
+          <small>直接读取客户跟进</small>
+        </div>
+        <div class="trial-card">
+          <span>模板覆盖</span>
+          <strong id="trialTemplateCount">0</strong>
+          <small>直接读取回复模板</small>
+        </div>
+      </div>
+
+      <div class="panel health-panel">
+        <div class="panel-head"><h2>数据健康检查</h2><span id="dataHealthScore">等待计算</span></div>
+        <div class="health-grid" id="dataHealthGrid"></div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head"><h2>上线检查清单</h2><span>点击动作可直接补齐</span></div>
+          <div class="checklist" id="trialChecklist"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>试点成功标准</h2><span>Success Criteria</span></div>
+          <ul class="success-list">
+            <li>至少导入 5-10 个主推产品资料。</li>
+            <li>至少测试 3 条客户真实历史询盘。</li>
+            <li>业务员能基于草稿修改后发送。</li>
+            <li>报价、交期、认证等风险项能被明确提示。</li>
+            <li>客户跟进记录、模板和产品资料能沉淀下来。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="panel trial-boundary">
+        <div class="panel-head"><h2>试点边界说明</h2><span>Commercial Boundary</span></div>
+        <div class="boundary-grid">
+          <div><strong>能做</strong><p>辅助询盘分析、产品匹配、英文回复草稿、跟进邮件、资料库管理、客户跟进和本地演示。</p></div>
+          <div><strong>不能承诺</strong><p>不自动成交、不自动报价、不替代业务员，不替代 ERP、财务、海关、税务和合规判断。</p></div>
+          <div><strong>人工确认</strong><p>价格、交期、认证、付款条款、合同条款和最终发送内容必须由客户公司负责人确认。</p></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>上线准备报告</h2>
+          <span>自动汇总现有功能数据</span>
+        </div>
+        <div class="quick-row">
+          <button id="goInquiryFromTrial">去处理真实询盘</button>
+          <button id="goProductsFromTrial">去导入产品资料</button>
+        </div>
+        <textarea id="trialReviewReport" class="short-textarea" readonly></textarea>
+      </div>
+    </section>
+
+    <section class="view" id="view-products">
+      <header class="topbar">
+        <div>
+          <h1>产品资料库</h1>
+          <p>导入客户产品资料后，询盘处理会优先基于资料库匹配，降低回复错误率。</p>
+        </div>
+        <div class="actions">
+          <button id="importDemo">一键导入示例资料</button>
+          <button id="exportProductsCsv">导出产品CSV</button>
+          <button id="backupProductsJson">批量备份产品库</button>
+          <button class="primary" id="addProduct">新增产品</button>
+        </div>
+      </header>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>产品资料草稿生成器</h2>
+            <span>输入产品名自动生成</span>
+          </div>
+          <input id="productDraftName" class="text-input" placeholder="例如：太阳能庭院灯 / 100W LED Flood Light">
+          <div class="quick-row">
+            <button class="primary" id="generateProductDraft">生成资料草稿</button>
+            <button id="useProductDraft">放入导入框</button>
+          </div>
+          <textarea id="productDraftOutput" class="short-textarea" placeholder="生成结果会出现在这里，可人工修改后导入资料库"></textarea>
+          <div class="hint">
+            该功能基于内置行业模板生成资料草稿。MOQ、交期、认证、价格相关信息必须由客户人工确认后再用于真实报价。
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>一键导入客户资料</h2>
+            <span>支持 Excel 粘贴格式</span>
+          </div>
+          <textarea id="bulkImport" class="short-textarea" placeholder="每行一个产品：产品名 | 关键词 | MOQ | 交期 | 卖点 | 风险提示"></textarea>
+          <div class="quick-row">
+            <button class="primary" id="runImport">导入到资料库</button>
+            <button id="fillImport">填充示例格式</button>
+          </div>
+          <div class="hint">
+            实际商用版可接 Excel、PDF、产品目录和报价表。当前 MVP 用粘贴导入模拟一键导入流程。
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>资料完整度</h2>
+            <span id="libraryHealth">待导入</span>
+          </div>
+          <div class="health-list" id="healthList"></div>
+        </div>
+      </div>
+
+      <div class="panel table-panel">
+        <div class="panel-head">
+          <h2>产品列表</h2>
+          <span>用于询盘匹配</span>
+        </div>
+        <div class="table-tools">
+          <input id="productSearch" class="text-input" placeholder="输入产品名称、关键词、MOQ、交期快速查询">
+          <button id="clearProductSearch">清空查询</button>
+          <button id="undoDeleteProduct">撤回删除</button>
+          <span id="productSearchStatus">显示全部产品</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>产品</th>
+              <th>关键词</th>
+              <th>MOQ</th>
+              <th>交期</th>
+              <th>卖点</th>
+              <th>风险提示</th>
+              <th>完整度</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="productTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="view" id="view-follow">
+      <header class="topbar">
+        <div>
+          <h1>客户跟进</h1>
+          <p>每次生成回复后自动沉淀客户阶段，避免业务员漏跟进。</p>
+        </div>
+        <div class="actions">
+          <button id="exportFollowReminders">导出跟进提醒</button>
+        </div>
+      </header>
+
+      <div class="reminder-grid" id="followReminderGrid"></div>
+
+      <div class="panel table-panel">
+        <div class="panel-head">
+          <h2>跟进任务</h2>
+          <span id="leadCount">0 个客户</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>客户</th>
+              <th>国家</th>
+              <th>需求</th>
+              <th>阶段</th>
+              <th>下次跟进</th>
+              <th>跟进日期</th>
+              <th>建议动作</th>
+            </tr>
+          </thead>
+          <tbody id="leadTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="view" id="view-templates">
+      <header class="topbar">
+        <div>
+          <h1>回复模板</h1>
+          <p>沉淀企业自己的英文回复风格，让新人也能快速写出专业邮件。</p>
+        </div>
+        <button class="primary" id="saveTemplates">保存模板</button>
+      </header>
+
+      <div class="template-grid">
+        <div class="panel">
+          <div class="panel-head"><h2>首次回复</h2><span>First reply</span></div>
+          <textarea id="tplFirst" class="short-textarea"></textarea>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>报价回复</h2><span>Quotation</span></div>
+          <textarea id="tplQuote" class="short-textarea"></textarea>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>样品沟通</h2><span>Sample</span></div>
+          <textarea id="tplSample" class="short-textarea"></textarea>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>3 天跟进</h2><span>Follow-up</span></div>
+          <textarea id="tplFollow" class="short-textarea"></textarea>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>OEM 定制</h2><span>Private label</span></div>
+          <textarea id="tplOem" class="short-textarea"></textarea>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>认证确认</h2><span>Certificate</span></div>
+          <textarea id="tplCertificate" class="short-textarea"></textarea>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>紧急交期</h2><span>Urgent delivery</span></div>
+          <textarea id="tplUrgent" class="short-textarea"></textarea>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>资料目录</h2><span>Catalogue</span></div>
+          <textarea id="tplCatalogue" class="short-textarea"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-translate">
+      <header class="topbar">
+        <div>
+          <h1>翻译助手</h1>
+          <p>面向外贸邮件、询盘、报价沟通和跟进话术的多语言翻译草稿。</p>
+        </div>
+        <button class="primary" id="runTranslate">生成翻译</button>
+      </header>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>原文</h2>
+            <span>支持外贸常用表达</span>
+          </div>
+          <div class="translation-controls">
+            <select id="translateMode">
+              <option value="auto-en">自动识别 → 英文</option>
+              <option value="en-zh">英文 → 中文</option>
+              <option value="zh-en">中文 → 英文</option>
+              <option value="zh-es">中文 → 西语</option>
+              <option value="zh-ar">中文 → 阿语</option>
+              <option value="zh-fr">中文 → 法语</option>
+              <option value="zh-de">中文 → 德语</option>
+              <option value="zh-pt">中文 → 葡语</option>
+              <option value="en-es">英文 → 西语</option>
+              <option value="en-ar">英文 → 阿语</option>
+              <option value="en-fr">英文 → 法语</option>
+              <option value="en-de">英文 → 德语</option>
+              <option value="en-pt">英文 → 葡语</option>
+            </select>
+            <select id="translateTone">
+              <option value="business">商务正式</option>
+              <option value="friendly">友好跟进</option>
+              <option value="simple">简洁直接</option>
+            </select>
+          </div>
+          <textarea id="translateInput" class="short-textarea" placeholder="例如：请确认包装方式、目标港口和是否需要定制 logo。"></textarea>
+          <div class="quick-row">
+            <button id="fillTranslateSample">填充外贸示例</button>
+            <button id="copyTranslate">复制译文</button>
+          </div>
+          <div class="hint">
+            静态版翻译基于常用外贸短语和模板，不等同于真实机器翻译。合同、索赔、付款条款和法律内容必须人工确认。
+          </div>
+          <div class="language-panel">
+            <strong>当前支持的翻译方向</strong>
+            <span>中文 → 英文</span>
+            <span>中文 → 西语</span>
+            <span>中文 → 阿语</span>
+            <span>中文 → 法语</span>
+            <span>中文 → 德语</span>
+            <span>中文 → 葡语</span>
+            <span>英文 → 中文</span>
+            <span>英文 → 西语</span>
+            <span>英文 → 阿语</span>
+            <span>英文 → 法语</span>
+            <span>英文 → 德语</span>
+            <span>英文 → 葡语</span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>译文草稿</h2>
+            <span id="translateStatus">等待翻译</span>
+          </div>
+          <pre id="translateOutput"></pre>
+          <div class="result-box wide">
+            <h3>常用外贸表达</h3>
+            <ul id="phraseList"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-customers">
+      <header class="topbar">
+        <div><h1>客户管理</h1><p>客户等级、国家地区、跟进阶段和最近沟通记录统一管理。</p></div>
+        <div class="actions"><button id="saveCustomerBtn">保存当前客户</button><button id="importCustomerBtn">批量导入客户</button><button class="primary" id="addCustomerBtnNew">新增客户</button></div>
+      </header>
+      <div class="panel" id="customerImportPanel">
+        <div class="panel-head"><h2>批量导入客户</h2><span>客户名 | 国家 | 等级 | 阶段 | 品类 | 联系人 | 邮箱 | 需求 | 下一步</span></div>
+        <textarea id="customerBulkImport" class="short-textarea" placeholder="每行一个客户：客户名 | 国家 | 等级 | 阶段 | 品类 | 联系人 | 邮箱 | 需求 | 下一步"></textarea>
+        <div class="quick-row">
+          <button class="primary" id="runCustomerImport">导入客户</button>
+          <button id="fillCustomerImport">填充示例客户</button>
+          <button id="hideCustomerImport">收起</button>
+        </div>
+        <p class="hint">批量导入适合客户首次试用时快速迁移自己的客户资料。国家、等级和阶段可后续在客户详情中继续编辑。</p>
+      </div>
+      <div class="panel filter-bar" id="customerFilters"></div>
+      <div class="panel table-panel">
+        <div class="panel-head"><h2>客户列表</h2><span>Customer Portfolio</span></div>
+        <div class="table-tools">
+          <input id="customerSearch" class="text-input" placeholder="搜索客户、国家、等级、阶段、品类、联系人">
+          <button id="clearCustomerSearch">清空查询</button>
+          <span id="customerSearchStatus">显示全部客户</span>
+        </div>
+        <table><thead><tr><th>客户</th><th>国家</th><th>等级</th><th>阶段</th><th>需求品类</th><th>预计金额</th><th>操作</th></tr></thead><tbody id="customerTable"></tbody></table>
+      </div>
+      <div class="two-col">
+        <div class="panel customer-detail">
+          <div class="panel-head"><h2>客户详情预览</h2><span id="customerDetailName">请选择客户</span></div>
+          <div class="detail-tabs"><span class="active">基础资料</span><span>沟通记录</span><span>成交记录</span></div>
+          <div class="edit-grid" id="customerEditor"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>客户分层策略</h2><span>CRM Rules</span></div>
+          <div class="rule-list" id="crmRuleList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-docs">
+      <header class="topbar">
+        <div><h1>单证中心</h1><p>报价单、PI、CI、装箱单采用统一仿真纸质版式，方便演示专业交付能力。</p></div>
+        <div class="actions"><button id="saveDocBtn">保存单证</button><button class="primary" id="addDocBtn">新建单证</button></div>
+      </header>
+      <div class="panel doc-guide">
+        <strong>单证类型说明</strong>
+        <span>报价单用于报价沟通；形式发票用于客户确认订单和付款前确认；商业发票用于出货/清关/财务；装箱单用于记录箱数、毛重、净重和体积。点击下方类型后，“新建单证”会新建当前选中的类型。</span>
+      </div>
+      <div class="doc-grid" id="docFolders"></div>
+      <div class="two-col">
+        <div class="panel"><div class="panel-head"><h2>单证编辑</h2><span>Document Editor</span></div><div class="edit-grid" id="docEditor"></div></div>
+        <div class="paper" id="docPreview"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-orders">
+      <header class="topbar"><div><h1>订单履约</h1><p>从确认订单到生产、验货、发货、收款，节点化展示履约状态。</p></div><div class="actions"><button id="exportOrdersCsv">导出订单</button><button id="saveOrderBtn">保存订单</button><button class="primary" id="addOrderBtn">新增订单</button></div></header>
+      <div class="panel progress-panel">
+        <div id="orderProgress"></div>
+      </div>
+      <div class="two-col">
+        <div class="panel table-panel"><div class="panel-head"><h2>订单列表</h2><span>Order Pipeline</span></div><div class="table-tools"><input id="orderSearch" class="text-input" placeholder="搜索订单号、客户、产品、状态、物流"><button id="clearOrderSearch">清空查询</button><span id="orderSearchStatus">显示全部订单</span></div><table><thead><tr><th>订单号</th><th>客户</th><th>产品</th><th>金额</th><th>状态</th><th>操作</th></tr></thead><tbody id="orderTable"></tbody></table></div>
+        <div class="panel"><div class="panel-head"><h2>订单编辑</h2><span>Editable Order</span></div><div class="edit-grid" id="orderEditor"></div></div>
+      </div>
+      <div class="panel timeline"><div class="panel-head"><h2>物流跟踪</h2><span>Timeline</span></div><div id="orderTimeline"></div></div>
+      <div class="panel fulfillment-board" id="fulfillmentBoard"></div>
+    </section>
+
+    <section class="view" id="view-finance">
+      <header class="topbar"><div><h1>财务结算</h1><p>回款、待回款、逾期和利润测算集中展示，适合老板查看现金流。</p></div><div class="actions"><button id="exportFinanceCsv">导出财务</button><button class="primary" id="saveFinanceBtn">保存财务参数</button></div></header>
+      <div class="lux-metrics" id="financeMetrics"></div>
+      <div class="panel finance-form"><div class="panel-head"><h2>成本核算</h2><span>Cost Sheet</span></div><div id="financeEditor"></div></div>
+      <div class="panel table-panel"><div class="panel-head"><h2>回款计划</h2><span>Payment Schedule</span></div><table><thead><tr><th>客户</th><th>订单</th><th>应收</th><th>到期日</th><th>状态</th></tr></thead><tbody id="paymentTable"></tbody></table></div>
+    </section>
+
+    <section class="view" id="view-screen">
+      <div class="data-screen">
+        <div class="screen-head"><span>YAOHAI GLOBALTRADE AI</span><strong>外贸经营数据大屏</strong><em id="screenTime">-</em></div>
+        <div class="screen-grid" id="screenGrid"></div>
+        <div class="screen-foot">Data updated locally · Copyright YaoHai AI System</div>
+      </div>
+    </section>
+
+    <section class="view" id="view-profile">
+      <header class="topbar"><div><h1>个人中心</h1><p>账号资料、密码修改、偏好设置和企业品牌信息同步展示。</p></div><div class="actions"><button id="logoutBtn">退出登录</button><button class="primary" id="saveProfileBtn">保存设置</button></div></header>
+      <div class="profile-hero panel">
+        <div class="profile-avatar" id="profileAvatar">GT</div>
+        <div><h2 id="profileName">未登录账号</h2><p id="profileCompany">请先登录账号</p><span id="profileAccount">Account: -</span></div>
+        <div class="profile-license"><span>授权版本</span><strong id="profilePlan">-</strong><small id="profileExpire">-</small></div>
+      </div>
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head"><h2>账号信息</h2><span>Profile</span></div>
+          <label>姓名<input class="text-input" id="profileNameInput"></label>
+          <label>公司名称<input class="text-input" id="profileCompanyInput"></label>
+          <label>登录账号<input class="text-input" id="profileAccountInput" disabled></label>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>安全设置</h2><span>Security</span></div>
+          <label>新密码
+            <div class="password-field">
+              <input class="text-input" id="profilePasswordInput" type="password" placeholder="不修改可留空">
+              <button type="button" id="toggleProfilePassword" aria-label="显示或隐藏密码">◎</button>
+            </div>
+          </label>
+          <p class="hint">本地静态版账号保存在当前电脑浏览器本地数据中，用于客户演示、内部试点和本地部署体验。</p>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>品牌定制</h2><span>Branding</span></div>
+          <div class="edit-grid">
+            <label>企业显示名称<textarea class="mini-textarea" id="brandCompanyName" placeholder="例如：某某进出口有限公司"></textarea></label>
+            <label>Logo 定制要求<textarea class="mini-textarea" id="brandLogoRequest" placeholder="例如：希望使用蓝金配色、包含公司英文缩写"></textarea></label>
+            <label>主题色偏好<textarea class="mini-textarea" id="brandThemeColor" placeholder="例如：深蓝+金色 / 绿色商务 / 黑金"></textarea></label>
+            <label>版权/页脚文字<textarea class="mini-textarea" id="brandCopyright" placeholder="例如：Copyright 2026 XXX Trading"></textarea></label>
+          </div>
+          <p class="hint">客户填写后，可交给我们进行专属 Logo、公司名称、主题色和版权信息定制服务。</p>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>账号审计</h2><span>Local Access</span></div>
+          <div class="audit-list" id="accountAuditList"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>公司账号体系</h2><span>Company Users</span></div>
+          <div class="audit-list" id="companyAccountList"></div>
+          <p class="hint">账号层级：主账号可管理管理员子账号和普通子账号；管理员子账号可管理其下普通子账号；普通子账号用于日常业务操作。同一授权秘钥下共享同一套公司产品库、客户、订单、单证和财务数据。</p>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>当前账号权限</h2><span>Role Permission</span></div>
+          <div class="permission-grid" id="permissionGrid"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>数据安全与备份</h2><span>Backup</span></div>
+          <div class="actions stacked-actions">
+            <button id="exportWorkspaceBackup">导出完整备份</button>
+            <button id="exportCustomerData">导出客户数据</button>
+            <button id="exportOperationLogs">导出操作日志</button>
+            <button id="restoreProductsBackupBtn">恢复产品库备份</button>
+            <button id="importWorkspaceBackupBtn">恢复备份文件</button>
+            <button id="resetDemoData">一键重置演示数据</button>
+            <button id="lockAppBtn">锁定当前系统</button>
+          </div>
+          <input type="file" id="importWorkspaceBackup" accept=".yhbackup,application/json" hidden>
+          <input type="file" id="restoreProductsBackup" accept="application/json" hidden>
+          <p class="hint">完整备份会导出为 .yhbackup 专用文件，用于本软件恢复数据；不建议双击打开，也不需要用代码编辑器查看。更换电脑、清理浏览器缓存或重装系统前，必须先导出备份文件。</p>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>商用边界</h2><span>Commercial Notice</span></div>
+          <ul class="notice-list">
+            <li>当前版本为本地部署交付版，适合试点销售、单机部署和小团队内部使用。</li>
+            <li>询盘回复、报价、交期、认证、付款条款必须由业务员或负责人最终确认。</li>
+            <li>如需多人跨电脑实时协作、云端数据库、Outlook 插件或大模型 API，可升级为商用增强版单独交付。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-help">
+      <header class="topbar"><div><h1>帮助中心</h1><p>产品说明、操作指引、部署说明和售后服务入口。</p></div><button class="primary" id="contactServiceBtn">联系服务方</button></header>
+      <div class="two-col"><div class="help-grid" id="helpGrid"></div><div class="panel"><div class="panel-head"><h2 id="helpTitle">操作说明</h2><span>Guide Detail</span></div><p id="helpDetail" class="help-detail">点击左侧任意功能模块查看详细说明。</p><div class="service-card" id="serviceContact"></div></div></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

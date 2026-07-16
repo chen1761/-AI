@@ -33,5 +33,6 @@ $env:GITHUB_TOKEN="你的 GitHub Token"
 - `index.html`：官网首页
 - `robots.txt`：搜索引擎抓取规则
 - `sitemap.xml`：站点地图
-- `downloads/YaoHai_GlobalTrade_AI_Commercial_V1.0.10.zip`：下载应用
+- `download/YaoHai_GlobalTradeAI_Commercial_Delivery.zip`：下载应用
+
 

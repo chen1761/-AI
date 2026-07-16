@@ -21,13 +21,13 @@
   logo.svg
   robots.txt
   sitemap.xml
-  downloads/YaoHai_GlobalTrade_AI_Commercial_V1.0.10.zip
+  download/YaoHai_GlobalTradeAI_Commercial_Delivery.zip
   vercel.json
 
 三、官网按钮逻辑：
 1. “查看产品能力”：在官网页面内查看产品介绍。
 2. “下载应用”：下载客户可解压运行的商业版压缩包。
-3. “进入商业版工作台”：客户已在本机启动商业版服务后，可进入 http://127.0.0.1:8787/ 工作台。
+3. “进入商业版工作台”：客户已在本机启动商业版服务后，可进入 https://haoleyun.xyz/workbench/ 工作台。
 
 四、搜索收录说明：
 网站上线后，不会立刻出现在百度或 Google 搜索结果里。提交 sitemap 后，通常需要数天到数周被抓取和展示。页面已经写入标题、描述、关键词、结构化数据、robots.txt 和 sitemap.xml，满足基础收录条件。
@@ -37,4 +37,5 @@
 2. 执行 D:\npx.cmd vercel@latest login，完成命令行登录。
 3. 执行 D:\npx.cmd vercel@latest --prod --yes。
 4. 在 Vercel 项目设置中绑定 haoleyun.xyz，并按 Vercel 提示配置 DNS。
+
 
